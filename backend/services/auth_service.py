@@ -129,3 +129,13 @@ class AuthService:
             return user_data, None
         except Exception as e:
             return None, f"Token không hợp lệ hoặc đã hết hạn: {str(e)}"
+
+    @staticmethod
+    def get_user_by_email(email: str):
+        """
+        Tìm user trong Firestore theo email.
+        """
+        user_query = db.collection(collection_name).where("email", "==", email).get()
+        if not user_query:
+            return None, "Không tìm thấy người dùng!"
+        return user_query[0].to_dict(), None
