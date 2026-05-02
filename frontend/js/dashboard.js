@@ -193,11 +193,97 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Biến toàn cục để lưu danh sách sản phẩm hiện tại
 let currentProducts = [];
+let currentPage = 1;
+const itemsPerPage = 5;
 
 // Format tiền tệ VNĐ
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 };
+
+function renderProducts(page) {
+    const tableBody = document.getElementById('productTableBody');
+    
+    if (currentProducts.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có sản phẩm nào. Hãy thêm mới!</td></tr>';
+        document.getElementById('paginationInfo').textContent = 'Hiển thị 0 sản phẩm';
+        document.getElementById('pageNumbers').innerHTML = '';
+        document.getElementById('prevPageBtn').disabled = true;
+        document.getElementById('nextPageBtn').disabled = true;
+        return;
+    }
+
+    const totalPages = Math.ceil(currentProducts.length / itemsPerPage);
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    currentPage = page;
+
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, currentProducts.length);
+    
+    const productsToShow = currentProducts.slice(startIndex, endIndex);
+
+    tableBody.innerHTML = '';
+
+    productsToShow.forEach(p => {
+        // Determine badge class for status
+        let statusBadge = '';
+        if (p.availabilityStatus === 'In Stock') {
+            statusBadge = '<span class="badge badge-green">Còn hàng</span>';
+        } else if (p.availabilityStatus === 'Low Stock') {
+            statusBadge = '<span class="badge badge-blue">Sắp hết</span>';
+        } else {
+            statusBadge = '<span class="badge badge-red">Hết hàng</span>';
+        }
+
+        // Hình ảnh mặc định nếu không có thumbnail
+        const imgSrc = p.thumbnail || 'https://via.placeholder.com/48?text=No+Image';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>
+                <div class="product-cell">
+                    <img src="${imgSrc}" alt="${p.title}" class="product-thumb">
+                    <div class="product-info">
+                        <span class="product-title">${p.title}</span>
+                        <span class="product-sku">SKU: ${p.sku}</span>
+                    </div>
+                </div>
+            </td>
+            <td style="color: var(--text-muted);">${p.category}</td>
+            <td style="font-weight: 500;">${formatCurrency(p.price)}</td>
+            <td>${p.stock}</td>
+            <td>${statusBadge}</td>
+            <td>
+                <button class="action-btn" onclick="editProduct('${p.id}')">Sửa</button>
+                <button class="action-btn" style="color: var(--error);" onclick="deleteProduct('${p.id}')">Xóa</button>
+            </td>
+        `;
+        tableBody.appendChild(tr);
+    });
+    
+    document.getElementById('prevPageBtn').disabled = page === 1;
+    document.getElementById('nextPageBtn').disabled = page === totalPages;
+
+    const pageNumbersContainer = document.getElementById('pageNumbers');
+    pageNumbersContainer.innerHTML = '';
+    
+    // Giới hạn hiển thị số trang nếu có quá nhiều trang (tùy chọn, ở đây hiện hết)
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = `btn ${i === page ? 'btn-primary' : ''}`;
+        btn.style.padding = '4px 10px';
+        btn.style.minWidth = '32px';
+        if (i !== page) {
+            btn.style.background = 'white';
+            btn.style.color = 'var(--text-main)';
+            btn.style.border = '1px solid var(--border-color)';
+        }
+        btn.onclick = () => renderProducts(i);
+        pageNumbersContainer.appendChild(btn);
+    }
+}
 
 async function loadProducts() {
     try {
@@ -208,53 +294,8 @@ async function loadProducts() {
             // Cập nhật số lượng
             document.getElementById('productCount').textContent = currentProducts.length;
             
-            // Render bảng
-            const tableBody = document.getElementById('productTableBody');
-            
-            if (currentProducts.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có sản phẩm nào. Hãy thêm mới!</td></tr>';
-                return;
-            }
-
-            tableBody.innerHTML = ''; // Xóa chữ "Đang tải dữ liệu..."
-
-            currentProducts.forEach(p => {
-                // Determine badge class for status
-                let statusBadge = '';
-                if (p.availabilityStatus === 'In Stock') {
-                    statusBadge = '<span class="badge badge-green">Còn hàng</span>';
-                } else if (p.availabilityStatus === 'Low Stock') {
-                    statusBadge = '<span class="badge badge-blue">Sắp hết</span>';
-                } else {
-                    statusBadge = '<span class="badge badge-red">Hết hàng</span>';
-                }
-
-                // Hình ảnh mặc định nếu không có thumbnail
-                const imgSrc = p.thumbnail || 'https://via.placeholder.com/48?text=No+Image';
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>
-                        <div class="product-cell">
-                            <img src="${imgSrc}" alt="${p.title}" class="product-thumb">
-                            <div class="product-info">
-                                <span class="product-title">${p.title}</span>
-                                <span class="product-sku">SKU: ${p.sku}</span>
-                            </div>
-                        </div>
-                    </td>
-                    <td style="color: var(--text-muted);">${p.category}</td>
-                    <td style="font-weight: 500;">${formatCurrency(p.price)}</td>
-                    <td>${p.stock}</td>
-                    <td>${statusBadge}</td>
-                    <td>
-                        <button class="action-btn" onclick="editProduct('${p.id}')">Sửa</button>
-                        <button class="action-btn" style="color: var(--error);" onclick="deleteProduct('${p.id}')">Xóa</button>
-                    </td>
-                `;
-                tableBody.appendChild(tr);
-            });
-
+            // Render trang 1
+            renderProducts(1);
         }
     } catch (error) {
         console.error("Lỗi khi load sản phẩm:", error);
@@ -262,6 +303,16 @@ async function loadProducts() {
             '<tr><td colspan="6" class="empty-state" style="color: #ef4444;">Lỗi khi tải dữ liệu. Vui lòng thử lại!</td></tr>';
     }
 }
+
+// Xử lý sự kiện nút Previous / Next
+document.getElementById('prevPageBtn').addEventListener('click', () => {
+    if (currentPage > 1) renderProducts(currentPage - 1);
+});
+
+document.getElementById('nextPageBtn').addEventListener('click', () => {
+    const totalPages = Math.ceil(currentProducts.length / itemsPerPage);
+    if (currentPage < totalPages) renderProducts(currentPage + 1);
+});
 
 // Xử lý mở form sửa sản phẩm
 window.editProduct = (id) => {
