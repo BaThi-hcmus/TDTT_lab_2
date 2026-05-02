@@ -2,6 +2,7 @@ import bcrypt
 import jwt
 import os
 from datetime import datetime, timedelta
+from firebase_admin import auth
 from backend.core.firebase import get_firestore_client
 from backend.schemas.user import UserCreate
 
@@ -88,3 +89,39 @@ class AuthService:
             return None, "Mật khẩu không chính xác!"
         
         return user_data, None
+
+    @staticmethod
+    def verify_google_token(id_token: str):
+        """
+        Xác thực ID Token từ Google và trả về thông tin User.
+        """
+        try:
+            # 1. Xác thực token bằng Firebase Admin SDK
+            decoded_token = auth.verify_id_token(id_token)
+            email = decoded_token.get("email")
+            full_name = decoded_token.get("name")
+            avatar = decoded_token.get("picture")
+
+            # 2. Kiểm tra xem user này đã tồn tại trong DB của mình chưa
+            user_query = db.collection(collection_name).where("email", "==", email).get()
+            
+            if user_query:
+                # Nếu đã có, lấy thông tin user
+                user_data = user_query[0].to_dict()
+            else:
+                # Nếu chưa có, tạo mới user từ thông tin Google trả về
+                user_data = {
+                    "id": decoded_token.get("uid"), # Dùng luôn UID của Firebase
+                    "username": email.split("@")[0],
+                    "email": email,
+                    "full_name": full_name,
+                    "role": "user",
+                    "avatar": avatar,
+                    "is_active": True,
+                    "created_at": datetime.utcnow()
+                }
+                db.collection(collection_name).document(user_data["id"]).set(user_data)
+            
+            return user_data, None
+        except Exception as e:
+            return None, f"Token không hợp lệ hoặc đã hết hạn: {str(e)}"

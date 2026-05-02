@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập | Admin Portal</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Hệ thống Admin</h1>
+            <p>Chào mừng bạn trở lại!</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="admin@example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Mật khẩu</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                Đăng nhập ngay
+            </button>
+        </form>
+
+        <div class="divider">
+            <span>Hoặc đăng nhập bằng</span>
+        </div>
+
+        <button id="googleLogin" class="btn btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="20">
+            Tiếp tục với Google
+        </button>
+    </div>
+
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html>
