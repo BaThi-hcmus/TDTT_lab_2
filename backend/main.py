@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.routes.health import router as health_router
 from backend.routes.root import router as root_router
+from backend.routes.products import router as products_router
 
 app = FastAPI(
     title="Trang Web Bán Hàng Admin",
@@ -21,3 +22,4 @@ app.add_middleware(
 # Đăng ký các router
 app.include_router(root_router)
 app.include_router(health_router)
+app.include_router(products_router)
