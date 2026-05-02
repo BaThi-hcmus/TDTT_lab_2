@@ -74,6 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mở modal thêm sản phẩm
     addProductBtn.addEventListener('click', () => {
         addProductForm.reset(); // Xóa dữ liệu cũ trong form
+        delete addProductForm.dataset.editId; // Xóa trạng thái sửa
+        document.querySelector('#productModal h2').textContent = 'Thêm sản phẩm mới';
         productModal.style.display = 'flex';
     });
 
@@ -86,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === productModal) productModal.style.display = 'none';
     });
 
-    // Xử lý submit form thêm sản phẩm
+    // Xử lý submit form thêm/sửa sản phẩm
     addProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -121,6 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
             images: []
         };
 
+        const isEditing = addProductForm.dataset.editId !== undefined;
+        const editId = addProductForm.dataset.editId;
+
         try {
             // Thay đổi text của nút để báo đang xử lý
             const submitBtn = addProductForm.querySelector('button[type="submit"]');
@@ -128,25 +133,27 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.textContent = 'Đang lưu...';
             submitBtn.disabled = true;
 
-            const response = await fetch(`${API_URL}/products/create`, {
-                method: 'POST',
+            const url = isEditing ? `${API_URL}/products/edit/${editId}` : `${API_URL}/products/create`;
+            const method = isEditing ? 'PATCH' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                // credentials: 'include', // Bật lên nếu endpoint POST /products/ có yêu cầu xác thực JWT
                 body: JSON.stringify(newProductData)
             });
 
             if (response.ok) {
-                alert('Thêm sản phẩm thành công!');
+                alert(isEditing ? 'Cập nhật sản phẩm thành công!' : 'Thêm sản phẩm thành công!');
                 productModal.style.display = 'none';
                 loadProducts(); // Tải lại bảng dữ liệu
             } else {
                 const errorData = await response.json();
-                alert(`Lỗi: ${errorData.detail || 'Không thể thêm sản phẩm'}`);
+                alert(`Lỗi: ${errorData.detail || 'Không thể lưu sản phẩm'}`);
             }
         } catch (error) {
-            console.error("Lỗi khi thêm sản phẩm:", error);
+            console.error("Lỗi khi lưu sản phẩm:", error);
             alert("Lỗi kết nối tới máy chủ!");
         } finally {
             // Khôi phục trạng thái nút
@@ -160,6 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
     loadProducts();
 });
 
+// Biến toàn cục để lưu danh sách sản phẩm hiện tại
+let currentProducts = [];
+
 // Format tiền tệ VNĐ
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
@@ -169,22 +179,22 @@ async function loadProducts() {
     try {
         const response = await fetch(`${API_URL}/products/`);
         if (response.ok) {
-            const products = await response.json();
+            currentProducts = await response.json();
             
             // Cập nhật số lượng
-            document.getElementById('productCount').textContent = products.length;
+            document.getElementById('productCount').textContent = currentProducts.length;
             
             // Render bảng
             const tableBody = document.getElementById('productTableBody');
             
-            if (products.length === 0) {
+            if (currentProducts.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có sản phẩm nào. Hãy thêm mới!</td></tr>';
                 return;
             }
 
             tableBody.innerHTML = ''; // Xóa chữ "Đang tải dữ liệu..."
 
-            products.forEach(p => {
+            currentProducts.forEach(p => {
                 // Determine badge class for status
                 let statusBadge = '';
                 if (p.availabilityStatus === 'In Stock') {
@@ -229,9 +239,30 @@ async function loadProducts() {
     }
 }
 
-// Giữ lại scope cho các hàm onClick
+// Xử lý mở form sửa sản phẩm
 window.editProduct = (id) => {
-    alert("Tính năng sửa sản phẩm ID: " + id + " đang được phát triển.");
+    // Tìm sản phẩm trong danh sách hiện tại
+    const product = currentProducts.find(p => p.id === id);
+    if (!product) return;
+
+    // Điền thông tin vào form
+    document.getElementById('prodTitle').value = product.title;
+    document.getElementById('prodSku').value = product.sku;
+    document.getElementById('prodPrice').value = product.price;
+    document.getElementById('prodStock').value = product.stock;
+    document.getElementById('prodCategory').value = product.category;
+    document.getElementById('prodThumbnail').value = product.thumbnail || '';
+    document.getElementById('prodDesc').value = product.description || '';
+
+    // Đánh dấu form đang ở chế độ chỉnh sửa (lưu ID vào data attribute)
+    const form = document.getElementById('addProductForm');
+    form.dataset.editId = id;
+    
+    // Đổi tiêu đề modal
+    document.querySelector('#productModal h2').textContent = 'Chỉnh sửa sản phẩm';
+    
+    // Hiển thị modal
+    document.getElementById('productModal').style.display = 'flex';
 };
 
 window.deleteProduct = async (id) => {

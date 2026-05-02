@@ -43,3 +43,20 @@ class ProductService:
         
         doc_ref.update({"is_deleted": True})
         return True, None
+
+    @staticmethod
+    def edit_product(product_id: str, update_data: dict):
+        """
+        Cập nhật thông tin sản phẩm.
+        """
+        doc_ref = db.collection(collection_name).document(product_id)
+        doc = doc_ref.get()
+        if not doc.exists:
+            return False, "Sản phẩm không tồn tại!"
+        
+        # Ngăn chặn cập nhật trường ID và các trường không hợp lệ
+        if "id" in update_data:
+            del update_data["id"]
+            
+        doc_ref.update(update_data)
+        return True, None

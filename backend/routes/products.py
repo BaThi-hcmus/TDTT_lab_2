@@ -44,3 +44,18 @@ def delete_product(product_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi khi xóa sản phẩm: {str(e)}")
+
+@router.patch("/edit/{product_id}")
+def edit_product(product_id: str, update_data: dict):
+    """
+    API sửa thông tin sản phẩm.
+    """
+    try:
+        success, error = ProductService.edit_product(product_id, update_data)
+        if not success:
+            raise HTTPException(status_code=404, detail=error)
+        return {"message": "Cập nhật sản phẩm thành công"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi khi cập nhật sản phẩm: {str(e)}")
