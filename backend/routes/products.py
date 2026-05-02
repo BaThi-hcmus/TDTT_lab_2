@@ -8,7 +8,7 @@ router = APIRouter(
     tags=["products"]
 )
 
-@router.post("/", response_model=ProductResponse)
+@router.post("/create", response_model=ProductResponse)
 def add_product(product: ProductCreate):
     """
     API thêm mới sản phẩm.
@@ -29,3 +29,18 @@ def get_products():
         return products
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi khi lấy danh sách sản phẩm: {str(e)}")
+
+@router.delete("/delete/{product_id}")
+def delete_product(product_id: str):
+    """
+    API xóa mềm sản phẩm.
+    """
+    try:
+        success, error = ProductService.delete_product(product_id)
+        if not success:
+            raise HTTPException(status_code=404, detail=error)
+        return {"message": "Xóa sản phẩm thành công"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi khi xóa sản phẩm: {str(e)}")

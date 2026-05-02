@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.textContent = 'Đang lưu...';
             submitBtn.disabled = true;
 
-            const response = await fetch(`${API_URL}/products/`, {
+            const response = await fetch(`${API_URL}/products/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -234,8 +234,24 @@ window.editProduct = (id) => {
     alert("Tính năng sửa sản phẩm ID: " + id + " đang được phát triển.");
 };
 
-window.deleteProduct = (id) => {
+window.deleteProduct = async (id) => {
     if(confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
-        alert("Tính năng xóa sản phẩm ID: " + id + " đang được phát triển.");
+        try {
+            const response = await fetch(`${API_URL}/products/delete/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                alert("Đã xóa sản phẩm thành công!");
+                // Tải lại danh sách sau khi xóa
+                loadProducts();
+            } else {
+                const errorData = await response.json();
+                alert(`Lỗi: ${errorData.detail || 'Không thể xóa sản phẩm'}`);
+            }
+        } catch (error) {
+            console.error("Lỗi khi xóa sản phẩm:", error);
+            alert("Lỗi kết nối tới máy chủ!");
+        }
     }
 };

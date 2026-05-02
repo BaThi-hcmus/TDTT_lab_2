@@ -19,10 +19,27 @@ class ProductService:
     @staticmethod
     def get_all_products():
         """
-        Lấy danh sách sản phẩm từ Firestore.
+        Lấy danh sách sản phẩm từ Firestore (bỏ qua những sản phẩm đã bị xóa mềm).
         """
         products = []
+        # Lọc các sản phẩm chưa bị xóa (is_deleted không tồn tại hoặc bằng False)
+        # Vì trước đây chưa có trường này, ta sẽ dùng query để lấy hết rồi check bằng code (do Firestore khó filter nếu field không tồn tại)
         docs = db.collection(collection_name).stream()
         for doc in docs:
-            products.append(doc.to_dict())
+            data = doc.to_dict()
+            if not data.get("is_deleted", False):
+                products.append(data)
         return products
+
+    @staticmethod
+    def delete_product(product_id: str):
+        """
+        Xóa mềm sản phẩm (set is_deleted = True).
+        """
+        doc_ref = db.collection(collection_name).document(product_id)
+        doc = doc_ref.get()
+        if not doc.exists:
+            return False, "Sản phẩm không tồn tại!"
+        
+        doc_ref.update({"is_deleted": True})
+        return True, None
