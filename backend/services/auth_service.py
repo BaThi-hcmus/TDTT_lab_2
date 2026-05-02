@@ -1,5 +1,7 @@
 import bcrypt
-from datetime import datetime
+import jwt
+import os
+from datetime import datetime, timedelta
 from backend.core.firebase import get_firestore_client
 from backend.schemas.user import UserCreate
 
@@ -57,3 +59,32 @@ class AuthService:
         doc_ref.set(user_dict)
         
         return user_dict, None
+
+    @staticmethod
+    def create_access_token(data: dict):
+        """
+        Tạo mã JWT Token.
+        """
+        to_encode = data.copy()
+        expire = datetime.utcnow() + timedelta(minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60)))
+        to_encode.update({"exp": expire})
+        encoded_jwt = jwt.encode(to_encode, os.getenv("JWT_SECRET_KEY"), algorithm=os.getenv("JWT_ALGORITHM"))
+        return encoded_jwt
+
+    @staticmethod
+    def authenticate_user(email: str, password: str):
+        """
+        Xác thực email và mật khẩu của user.
+        """
+        # 1. Tìm user theo email
+        user_query = db.collection(collection_name).where("email", "==", email).get()
+        if not user_query:
+            return None, "Email không tồn tại!"
+        
+        user_data = user_query[0].to_dict()
+        
+        # 2. Kiểm tra mật khẩu
+        if not AuthService.verify_password(password, user_data["hashed_password"]):
+            return None, "Mật khẩu không chính xác!"
+        
+        return user_data, None

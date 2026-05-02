@@ -23,3 +23,8 @@ class UserResponse(UserBase):
 
     class Config:
         from_attributes = True
+
+# Schema dùng cho việc đăng nhập
+class UserLogin(BaseModel):
+    email: str
+    password: str
