@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from backend.routes.health import router as health_router
+from backend.routes.root import router as root_router
 
 app = FastAPI(
     title="Trang Web Bán Hàng Admin",
@@ -16,9 +18,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-def read_root():
-    return {
-        "message": "Chào mừng đến với hệ thống API Quản lý Bán Hàng",
-        "description": "API hỗ trợ các tính năng quản lý sản phẩm.",
-    }
+# Đăng ký các router
+app.include_router(root_router)
+app.include_router(health_router)
