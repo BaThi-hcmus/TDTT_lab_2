@@ -64,24 +64,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewSections = document.querySelectorAll('.view-section');
     const pageTitle = document.getElementById('pageTitle');
 
+    // Chuyển URL hash khi click menu
     sidebarItems.forEach(item => {
         item.addEventListener('click', () => {
-            // Xóa active khỏi tất cả menu items
-            sidebarItems.forEach(i => i.classList.remove('active'));
-            // Thêm active cho menu item được click
-            item.classList.add('active');
-
-            // Ẩn tất cả các view
-            viewSections.forEach(view => view.classList.remove('active'));
-            
-            // Hiện view tương ứng
             const targetId = item.getAttribute('data-target');
-            document.getElementById(targetId).classList.add('active');
-
-            // Cập nhật tiêu đề trang
-            pageTitle.textContent = item.textContent.trim().split(' ')[1] || item.textContent.trim();
+            window.location.hash = targetId.replace('view-', '');
         });
     });
+
+    // Hàm xử lý khi URL thay đổi
+    function handleHashChange() {
+        let hash = window.location.hash.replace('#', '');
+        if (!hash) hash = 'dashboard'; // Mặc định trang chủ
+
+        const targetId = 'view-' + hash;
+        const targetItem = document.querySelector(`.sidebar-item[data-target="${targetId}"]`);
+        
+        if (targetItem) {
+            // Xóa active
+            sidebarItems.forEach(i => i.classList.remove('active'));
+            viewSections.forEach(view => view.classList.remove('active'));
+            
+            // Thêm active
+            targetItem.classList.add('active');
+            const targetView = document.getElementById(targetId);
+            if (targetView) targetView.classList.add('active');
+
+            // Cập nhật tiêu đề trang (lấy từ phần tử có text, bỏ qua khoảng trắng/emoji đầu tiên)
+            const fullText = targetItem.textContent.trim();
+            const textParts = fullText.split(' ');
+            pageTitle.textContent = textParts.slice(1).join(' ') || fullText;
+        }
+    }
+
+    // Lắng nghe sự kiện popstate/hashchange
+    window.addEventListener('hashchange', handleHashChange);
+    // Chạy lần đầu khi trang vừa load xong
+    handleHashChange();
 
     // 4. Đăng xuất
     logoutBtn.addEventListener('click', () => {
