@@ -59,6 +59,30 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === userModal) userModal.style.display = 'none';
     });
 
+    // --- ĐIỀU HƯỚNG SIDEBAR (SPA ROUTING) ---
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    const viewSections = document.querySelectorAll('.view-section');
+    const pageTitle = document.getElementById('pageTitle');
+
+    sidebarItems.forEach(item => {
+        item.addEventListener('click', () => {
+            // Xóa active khỏi tất cả menu items
+            sidebarItems.forEach(i => i.classList.remove('active'));
+            // Thêm active cho menu item được click
+            item.classList.add('active');
+
+            // Ẩn tất cả các view
+            viewSections.forEach(view => view.classList.remove('active'));
+            
+            // Hiện view tương ứng
+            const targetId = item.getAttribute('data-target');
+            document.getElementById(targetId).classList.add('active');
+
+            // Cập nhật tiêu đề trang
+            pageTitle.textContent = item.textContent.trim().split(' ')[1] || item.textContent.trim();
+        });
+    });
+
     // 4. Đăng xuất
     logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('user');

@@ -9,16 +9,126 @@
     <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">ADMIN.IO</div>
-        <div class="user-nav">
-            <div id="userProfile" class="user-profile-btn">
-                <span id="userName">Đang tải...</span>
-                <span class="arrow">▼</span>
-            </div>
-            <button id="logoutBtn" class="btn btn-logout">Đăng xuất</button>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">ADMIN.IO</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item active" data-target="view-dashboard">
+                    <span class="icon">📊</span> Tổng quan
+                </li>
+                <li class="sidebar-item" data-target="view-products">
+                    <span class="icon">📦</span> Sản phẩm
+                </li>
+                <li class="sidebar-item" data-target="view-categories">
+                    <span class="icon">🏷️</span> Danh mục
+                </li>
+                <li class="sidebar-item" data-target="view-users">
+                    <span class="icon">👥</span> Người dùng
+                </li>
+                <li class="sidebar-item" data-target="view-settings">
+                    <span class="icon">⚙️</span> Cài đặt
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Header -->
+            <nav class="navbar">
+                <div class="nav-left">
+                    <h2 id="pageTitle" style="margin: 0; font-size: 1.25rem;">Tổng quan</h2>
+                </div>
+                <div class="user-nav">
+                    <div id="userProfile" class="user-profile-btn">
+                        <span id="userName">Đang tải...</span>
+                        <span class="arrow">▼</span>
+                    </div>
+                    <button id="logoutBtn" class="btn btn-logout">Đăng xuất</button>
+                </div>
+            </nav>
+
+            <main class="main-content">
+                <!-- VIEW: DASHBOARD -->
+                <section id="view-dashboard" class="view-section active">
+                    <section class="welcome-section">
+                        <h1>Chào buổi tối, <span id="welcomeName">Admin</span>! 👋</h1>
+                        <p style="color: var(--text-muted);">Đây là tổng quan về hoạt động của cửa hàng.</p>
+                    </section>
+
+                    <section class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Tổng sản phẩm</h3>
+                            <div class="value" id="productCount">--</div>
+                            <button class="btn btn-primary" onclick="document.querySelector('[data-target=\'view-products\']').click()">Quản lý kho</button>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Đơn hàng mới</h3>
+                            <div class="value">0</div>
+                            <button class="btn" style="background: #f1f5f9; color: var(--text-main);">Xem đơn hàng</button>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Doanh thu</h3>
+                            <div class="value">0đ</div>
+                            <button class="btn" style="background: #f1f5f9; color: var(--text-main);">Báo cáo</button>
+                        </div>
+                    </section>
+                </section>
+
+                <!-- VIEW: SẢN PHẨM -->
+                <section id="view-products" class="view-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Quản lý Sản phẩm</h2>
+                        <button id="addProductBtn" class="btn btn-primary">+ Thêm sản phẩm mới</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Danh mục</th>
+                                    <th>Giá</th>
+                                    <th>Kho</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productTableBody">
+                                <tr>
+                                    <td colspan="6" class="empty-state">Đang tải dữ liệu...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- VIEW: DANH MỤC -->
+                <section id="view-categories" class="view-section">
+                    <div class="empty-state" style="margin-top: 50px;">
+                        <h2 style="color: var(--text-main);">Quản lý Danh mục</h2>
+                        <p>Tính năng đang được phát triển...</p>
+                    </div>
+                </section>
+
+                <!-- VIEW: NGƯỜI DÙNG -->
+                <section id="view-users" class="view-section">
+                    <div class="empty-state" style="margin-top: 50px;">
+                        <h2 style="color: var(--text-main);">Quản lý Người dùng</h2>
+                        <p>Tính năng đang được phát triển...</p>
+                    </div>
+                </section>
+
+                <!-- VIEW: CÀI ĐẶT -->
+                <section id="view-settings" class="view-section">
+                    <div class="empty-state" style="margin-top: 50px;">
+                        <h2 style="color: var(--text-main);">Cài đặt hệ thống</h2>
+                        <p>Tính năng đang được phát triển...</p>
+                    </div>
+                </section>
+            </main>
         </div>
-    </nav>
+    </div>
 
     <!-- Modal thông tin user -->
     <div id="userModal" class="user-modal" style="display: none;">
@@ -106,58 +216,6 @@
             </div>
         </div>
     </div>
-
-    <main class="main-content">
-        <section class="welcome-section">
-            <h1>Chào buổi tối, <span id="welcomeName">Admin</span>! 👋</h1>
-            <p style="color: var(--text-muted);">Đây là tổng quan về hoạt động của cửa hàng.</p>
-        </section>
-
-        <section class="stats-grid">
-            <div class="stat-card">
-                <h3>Tổng sản phẩm</h3>
-                <div class="value" id="productCount">--</div>
-                <button class="btn btn-primary">Quản lý kho</button>
-            </div>
-            <div class="stat-card">
-                <h3>Đơn hàng mới</h3>
-                <div class="value">0</div>
-                <button class="btn" style="background: #f1f5f9; color: var(--text-main);">Xem đơn hàng</button>
-            </div>
-            <div class="stat-card">
-                <h3>Doanh thu</h3>
-                <div class="value">0đ</div>
-                <button class="btn" style="background: #f1f5f9; color: var(--text-main);">Báo cáo</button>
-            </div>
-        </section>
-
-        <section class="products-section">
-            <div class="section-header">
-                <h2 class="section-title">Quản lý Sản phẩm</h2>
-                <button id="addProductBtn" class="btn btn-primary">+ Thêm sản phẩm mới</button>
-            </div>
-
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Sản phẩm</th>
-                            <th>Danh mục</th>
-                            <th>Giá</th>
-                            <th>Kho</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody id="productTableBody">
-                        <tr>
-                            <td colspan="6" class="empty-state">Đang tải dữ liệu...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
 
     <script type="module" src="js/dashboard.js"></script>
 </body>
