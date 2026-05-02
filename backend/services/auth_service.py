@@ -84,7 +84,11 @@ class AuthService:
         
         user_data = user_query[0].to_dict()
         
-        # 2. Kiểm tra mật khẩu
+        # 2. Kiểm tra xem tài khoản này có mật khẩu không (tài khoản Google sẽ không có)
+        if "hashed_password" not in user_data:
+            return None, "Tài khoản này được tạo qua Google. Vui lòng đăng nhập bằng Google!"
+        
+        # 3. Kiểm tra mật khẩu
         if not AuthService.verify_password(password, user_data["hashed_password"]):
             return None, "Mật khẩu không chính xác!"
         
