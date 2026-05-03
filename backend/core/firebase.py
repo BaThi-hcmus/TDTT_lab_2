@@ -15,7 +15,7 @@ firebase_config = {
     "token_uri": "https://oauth2.googleapis.com/token",
 }
 
-# Khởi tạo Firebase App nếu chưa được khởi tạo
+# Khởi tạo Firebase App
 if not firebase_admin._apps:
     try:
         cred = credentials.Certificate(firebase_config)
