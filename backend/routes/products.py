@@ -59,3 +59,18 @@ def edit_product(product_id: str, update_data: dict):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi khi cập nhật sản phẩm: {str(e)}")
+
+@router.get("/detail/{product_id}", response_model=ProductResponse)
+def get_product_detail(product_id: str):
+    """
+    API lấy thông tin chi tiết một sản phẩm.
+    """
+    try:
+        product = ProductService.get_product_by_id(product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Sản phẩm không tồn tại hoặc đã bị xóa")
+        return product
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi khi lấy chi tiết sản phẩm: {str(e)}")

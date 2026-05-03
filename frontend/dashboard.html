@@ -6,7 +6,30 @@
     <title>Dashboard | Quản trị viên</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/dashboard.css?v=2">
+    <style>
+        /* CSS khẩn cấp để đảm bảo hiệu ứng hover luôn chạy */
+        .product-title-link {
+            cursor: pointer !important;
+            color: #2563eb !important;
+            font-weight: 600 !important;
+            transition: all 0.2s ease !important;
+            display: inline-block !important;
+        }
+        .product-title-link:hover {
+            color: #1d4ed8 !important;
+            text-decoration: underline !important;
+            transform: translateY(-2px) !important;
+        }
+        /* Tùy chỉnh thanh cuộn cho gọn */
+        #detailModalBody::-webkit-scrollbar {
+            width: 6px;
+        }
+        #detailModalBody::-webkit-scrollbar-thumb {
+            background-color: #e2e8f0;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="admin-layout">
@@ -172,7 +195,7 @@
         </div>
     </div>
 
-    <!-- Modal Thêm Sản Phẩm -->
+    <!-- Modal Thêm/Sửa Sản Phẩm -->
     <div id="productModal" class="user-modal" style="display: none;">
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
@@ -228,6 +251,42 @@
         </div>
     </div>
 
-    <script type="module" src="js/dashboard.js"></script>
+    <!-- Modal Chi tiết Sản Phẩm -->
+    <div id="productDetailModal" class="user-modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px; max-height: 85vh; border-radius: 16px; display: flex; flex-direction: column;">
+            <div class="modal-header" style="padding: 16px 20px; flex-shrink: 0;">
+                <h2 style="font-size: 1rem;">Chi tiết sản phẩm</h2>
+                <button id="closeDetailModal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body" id="detailModalBody" style="padding: 20px; overflow-y: auto; flex: 1;">
+                <div style="text-align: center; margin-bottom: 16px;">
+                    <img id="detailThumb" src="" alt="" style="width: 120px; height: 120px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border-color); background: #f8fafc;">
+                </div>
+                <h3 id="detailTitle" style="text-align: center; margin-bottom: 4px; font-size: 1.2rem;">--</h3>
+                <p id="detailSku" style="text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">--</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div class="info-row" style="padding: 10px 14px;">
+                        <span class="info-label">Danh mục</span>
+                        <span class="info-value" id="detailCategory" style="font-size: 0.9rem;">--</span>
+                    </div>
+                    <div class="info-row" style="padding: 10px 14px;">
+                        <span class="info-label">Giá bán</span>
+                        <span class="info-value" id="detailPrice" style="color: #2563eb; font-weight: 700; font-size: 0.95rem;">--</span>
+                    </div>
+                    <div class="info-row" style="padding: 10px 14px;">
+                        <span class="info-label">Tồn kho</span>
+                        <span class="info-value" id="detailStock" style="font-size: 0.9rem;">--</span>
+                    </div>
+                    <div class="info-row" style="padding: 10px 14px; flex-direction: column; align-items: flex-start; gap: 4px;">
+                        <span class="info-label">Mô tả</span>
+                        <span class="info-value" id="detailDesc" style="font-weight: 400; font-size: 0.85rem; color: #4b5563; line-height: 1.4;">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/dashboard.js?v=4"></script>
 </body>
 </html>

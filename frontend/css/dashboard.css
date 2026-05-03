@@ -397,3 +397,17 @@
     padding: 40px;
     color: var(--text-muted);
 }
+
+.product-title-link {
+    cursor: pointer;
+    color: #2563eb !important; /* Xanh đậm rõ ràng */
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.product-title-link:hover {
+    color: #1d4ed8 !important;
+    text-decoration: underline;
+    transform: translateY(-1px);
+}

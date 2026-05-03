@@ -60,3 +60,17 @@ class ProductService:
             
         doc_ref.update(update_data)
         return True, None
+
+    @staticmethod
+    def get_product_by_id(product_id: str):
+        """
+        Lấy thông tin chi tiết một sản phẩm.
+        """
+        doc_ref = db.collection(collection_name).document(product_id)
+        doc = doc_ref.get()
+        if not doc.exists:
+            return None
+        data = doc.to_dict()
+        if data.get("is_deleted", False):
+            return None
+        return data

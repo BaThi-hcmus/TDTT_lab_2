@@ -1,5 +1,8 @@
 import { API_URL } from "./config.js";
 
+// Lệnh này để kiểm tra xem script đã được tải bản mới chưa
+console.log("--- DASHBOARD SCRIPT LOADED (V3) ---");
+
 document.addEventListener('DOMContentLoaded', () => {
     const userModal = document.getElementById('userModal');
     const userProfileBtn = document.getElementById('userProfile');
@@ -131,6 +134,53 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === productModal) productModal.style.display = 'none';
     });
 
+    // --- XEM CHI TIẾT SẢN PHẨM ---
+    const productDetailModal = document.getElementById('productDetailModal');
+    const closeDetailModal = document.getElementById('closeDetailModal');
+
+    closeDetailModal.addEventListener('click', () => {
+        productDetailModal.style.display = 'none';
+    });
+
+    productDetailModal.addEventListener('click', (e) => {
+        if (e.target === productDetailModal) productDetailModal.style.display = 'none';
+    });
+
+    window.viewProductDetail = async (id) => {
+        console.log("Đang xem chi tiết sản phẩm ID:", id);
+        try {
+            const modal = document.getElementById('productDetailModal');
+            if (!modal) {
+                console.error("Không tìm thấy modal productDetailModal");
+                return;
+            }
+
+            // Fetch từ API detail vừa tạo
+            const response = await fetch(`${API_URL}/products/detail/${id}`);
+            if (!response.ok) {
+                alert('Không thể tải chi tiết sản phẩm!');
+                return;
+            }
+            
+            const p = await response.json();
+            
+            // Gắn dữ liệu vào Modal
+            document.getElementById('detailThumb').src = p.thumbnail || 'https://via.placeholder.com/150?text=No+Image';
+            document.getElementById('detailTitle').textContent = p.title;
+            document.getElementById('detailSku').textContent = 'SKU: ' + p.sku;
+            document.getElementById('detailCategory').textContent = p.category;
+            document.getElementById('detailPrice').textContent = formatCurrency(p.price);
+            document.getElementById('detailStock').textContent = p.stock;
+            document.getElementById('detailDesc').textContent = p.description || 'Không có mô tả';
+            
+            // Hiển thị modal
+            modal.style.display = 'flex';
+        } catch (error) {
+            console.error("Lỗi khi xem chi tiết:", error);
+            alert('Lỗi khi tải chi tiết sản phẩm.');
+        }
+    };
+
     // Xử lý submit form thêm/sửa sản phẩm
     addProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -225,7 +275,6 @@ function renderProducts(page) {
     
     if (currentProducts.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có sản phẩm nào. Hãy thêm mới!</td></tr>';
-        document.getElementById('paginationInfo').textContent = 'Hiển thị 0 sản phẩm';
         document.getElementById('pageNumbers').innerHTML = '';
         document.getElementById('prevPageBtn').disabled = true;
         document.getElementById('nextPageBtn').disabled = true;
@@ -264,7 +313,7 @@ function renderProducts(page) {
                 <div class="product-cell">
                     <img src="${imgSrc}" alt="${p.title}" class="product-thumb">
                     <div class="product-info">
-                        <span class="product-title">${p.title}</span>
+                        <span class="product-title product-title-link" onclick="viewProductDetail('${p.id}')">${p.title}</span>
                         <span class="product-sku">SKU: ${p.sku}</span>
                     </div>
                 </div>
