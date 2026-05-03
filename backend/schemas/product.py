@@ -44,13 +44,13 @@ class ProductBase(BaseModel):
     images: List[str] = []
     thumbnail: str
 
-# Schema dùng cho việc tạo sản phẩm mới (thường không yêu cầu ID vì DB sẽ tự sinh)
+# Schema dùng cho việc tạo sản phẩm mới 
 class ProductCreate(ProductBase):
     pass
 
 # Schema dùng để trả về dữ liệu cho Client (bao gồm cả ID)
 class ProductResponse(ProductBase):
-    id: Union[int, str]  # Để Union[int, str] vì Firebase sau này sẽ dùng chuỗi (string) làm ID, nhưng ví dụ hiện tại là int (1)
+    id: Union[int, str]  # Để Union[int, str] vì Firebase sau này sẽ dùng string làm ID
 
     class Config:
         from_attributes = True

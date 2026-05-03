@@ -1,15 +1,12 @@
 import { API_URL } from "./config.js";
 
-// Lệnh này để kiểm tra xem script đã được tải bản mới chưa
-console.log("--- DASHBOARD SCRIPT LOADED (V3) ---");
-
 document.addEventListener('DOMContentLoaded', () => {
     const userModal = document.getElementById('userModal');
     const userProfileBtn = document.getElementById('userProfile');
     const closeModalBtn = document.getElementById('closeModal');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    // 1. Hiển thị tên user từ localStorage
+    // Hiển thị tên user từ localStorage
     const user = JSON.parse(localStorage.getItem('user'));
     if (user) {
         document.getElementById('userName').textContent = user.full_name || user.email;
@@ -20,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // 2. Click vào tên user -> mở modal thông tin
+    //  Click vào tên user -> mở modal thông tin
     userProfileBtn.addEventListener('click', async () => {
         // Hiển thị thông tin từ localStorage trước
         document.getElementById('profileName').textContent = user.full_name || '--';
@@ -53,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 3. Đóng modal
+    //  Đóng modal
     closeModalBtn.addEventListener('click', () => {
         userModal.style.display = 'none';
     });
@@ -62,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === userModal) userModal.style.display = 'none';
     });
 
-    // --- ĐIỀU HƯỚNG SIDEBAR (SPA ROUTING) ---
+    // điều hương siderbar
     const sidebarItems = document.querySelectorAll('.sidebar-item');
     const viewSections = document.querySelectorAll('.view-section');
     const pageTitle = document.getElementById('pageTitle');
@@ -82,12 +79,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const targetId = 'view-' + hash;
         const targetItem = document.querySelector(`.sidebar-item[data-target="${targetId}"]`);
-        
+
         if (targetItem) {
             // Xóa active
             sidebarItems.forEach(i => i.classList.remove('active'));
             viewSections.forEach(view => view.classList.remove('active'));
-            
+
             // Thêm active
             targetItem.classList.add('active');
             const targetView = document.getElementById(targetId);
@@ -105,13 +102,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Chạy lần đầu khi trang vừa load xong
     handleHashChange();
 
-    // 4. Đăng xuất
+    // Đăng xuất
     logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('user');
         window.location.href = 'index.html';
     });
 
-    // --- QUẢN LÝ SẢN PHẨM ---
+    // quản lí sản phẩm
     const productModal = document.getElementById('productModal');
     const addProductBtn = document.getElementById('addProductBtn');
     const closeProductModal = document.getElementById('closeProductModal');
@@ -134,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === productModal) productModal.style.display = 'none';
     });
 
-    // --- XEM CHI TIẾT SẢN PHẨM ---
+    // xem chỉ tiết sản phẩm 
     const productDetailModal = document.getElementById('productDetailModal');
     const closeDetailModal = document.getElementById('closeDetailModal');
 
@@ -161,9 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Không thể tải chi tiết sản phẩm!');
                 return;
             }
-            
+
             const p = await response.json();
-            
+
             // Gắn dữ liệu vào Modal
             document.getElementById('detailThumb').src = p.thumbnail || 'https://via.placeholder.com/150?text=No+Image';
             document.getElementById('detailTitle').textContent = p.title;
@@ -172,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('detailPrice').textContent = formatCurrency(p.price);
             document.getElementById('detailStock').textContent = p.stock;
             document.getElementById('detailDesc').textContent = p.description || 'Không có mô tả';
-            
+
             // Hiển thị modal
             modal.style.display = 'flex';
         } catch (error) {
@@ -194,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
             category: document.getElementById('prodCategory').value,
             thumbnail: document.getElementById('prodThumbnail').value || 'https://via.placeholder.com/150',
             description: document.getElementById('prodDesc').value || 'Mô tả trống',
-            
+
             // --- Các trường bắt buộc theo Schema nhưng không có trong UI form ---
             discountPercentage: 0,
             rating: 5.0,
@@ -256,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 5. Load danh sách sản phẩm ban đầu
+    // Load danh sách sản phẩm ban đầu
     loadProducts();
 });
 
@@ -272,7 +269,7 @@ const formatCurrency = (amount) => {
 
 function renderProducts(page) {
     const tableBody = document.getElementById('productTableBody');
-    
+
     if (currentProducts.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có sản phẩm nào. Hãy thêm mới!</td></tr>';
         document.getElementById('pageNumbers').innerHTML = '';
@@ -288,7 +285,7 @@ function renderProducts(page) {
 
     const startIndex = (page - 1) * itemsPerPage;
     const endIndex = Math.min(startIndex + itemsPerPage, currentProducts.length);
-    
+
     const productsToShow = currentProducts.slice(startIndex, endIndex);
 
     tableBody.innerHTML = '';
@@ -329,14 +326,14 @@ function renderProducts(page) {
         `;
         tableBody.appendChild(tr);
     });
-    
+
     document.getElementById('prevPageBtn').disabled = page === 1;
     document.getElementById('nextPageBtn').disabled = page === totalPages;
 
     const pageNumbersContainer = document.getElementById('pageNumbers');
     pageNumbersContainer.innerHTML = '';
-    
-    // Giới hạn hiển thị số trang nếu có quá nhiều trang (tùy chọn, ở đây hiện hết)
+
+    // Giới hạn hiển thị số trang nếu có quá nhiều trang
     for (let i = 1; i <= totalPages; i++) {
         const btn = document.createElement('button');
         btn.textContent = i;
@@ -358,16 +355,16 @@ async function loadProducts() {
         const response = await fetch(`${API_URL}/products/`);
         if (response.ok) {
             currentProducts = await response.json();
-            
+
             // Cập nhật số lượng
             document.getElementById('productCount').textContent = currentProducts.length;
-            
+
             // Render trang 1
             renderProducts(1);
         }
     } catch (error) {
         console.error("Lỗi khi load sản phẩm:", error);
-        document.getElementById('productTableBody').innerHTML = 
+        document.getElementById('productTableBody').innerHTML =
             '<tr><td colspan="6" class="empty-state" style="color: #ef4444;">Lỗi khi tải dữ liệu. Vui lòng thử lại!</td></tr>';
     }
 }
@@ -400,16 +397,16 @@ window.editProduct = (id) => {
     // Đánh dấu form đang ở chế độ chỉnh sửa (lưu ID vào data attribute)
     const form = document.getElementById('addProductForm');
     form.dataset.editId = id;
-    
+
     // Đổi tiêu đề modal
     document.querySelector('#productModal h2').textContent = 'Chỉnh sửa sản phẩm';
-    
+
     // Hiển thị modal
     document.getElementById('productModal').style.display = 'flex';
 };
 
 window.deleteProduct = async (id) => {
-    if(confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
+    if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
         try {
             const response = await fetch(`${API_URL}/products/delete/${id}`, {
                 method: 'DELETE',

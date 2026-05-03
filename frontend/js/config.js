@@ -1,4 +1,4 @@
-// Cấu hình Firebase từ thông tin bạn cung cấp
+// Cấu hình Firebase 
 const firebaseConfig = {
     apiKey: "AIzaSyA_6lD7idk1rh-Jb9oVfTOQ6uR56LyWCSg",
     authDomain: "test-demo-smart-tourism.firebaseapp.com",

@@ -94,7 +94,7 @@ Frontend là ứng dụng Vanilla JS thuần túy, chạy tại cổng **3000**.
 
 Xem hướng dẫn sử dụng và demo các tính năng (Thêm, Sửa, Xóa, Phân trang, Xem chi tiết) tại đây:
 
-👉 **[Link Video Demo tại đây]** *(Vui lòng cập nhật link video của bạn)*
+**[Link Video Demo tại đây]** https://drive.google.com/drive/folders/16seDtC92G1DzzorOQtqj6j5J_pQpp5Z2?usp=drive_link
 
 ---
 
